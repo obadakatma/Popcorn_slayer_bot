@@ -1,12 +1,16 @@
 import os
+import re
 
 import requests
 from telegram.ext.updater import Updater
 from telegram.update import Update
 from telegram.ext.callbackcontext import CallbackContext
 from telegram.ext.commandhandler import CommandHandler
-from telegram.ext.messagehandler import MessageHandler
+from telegram.ext.conversationhandler import ConversationHandler
 from telegram.ext.filters import Filters
+from telegram.ext.messagehandler import MessageHandler
+from telegram.keyboardbutton import KeyboardButton
+from telegram.replykeyboardmarkup import ReplyKeyboardMarkup
 import telegram
 
 
@@ -14,12 +18,32 @@ class Init:
     def __init__(self, TOKEN):
         self.update = Updater(token=TOKEN)
         self.bot = telegram.Bot(token=TOKEN)
+        self.mainButtons = ["Series📺", "Movies🎬"]
+        self.mainKeyboard = [[KeyboardButton(button)] for button in self.mainButtons]
+        self.secondButtons = ["Popular", "Top Rated", "Now Playing", "Upcoming", "Categories", "Search", "Go Back"]
+        self.secondKeyBoard = [[KeyboardButton(choise)] for choise in self.secondButtons]
         self.startCommand = CommandHandler("start", self.start)
-        self.messageCommand = MessageHandler(filters=Filters.text, callback=self.message)
+        self.movieConversation = ConversationHandler(
+            entry_points=[MessageHandler(Filters.regex(re.compile(r'\b(?:Movies)\b', re.IGNORECASE)), self.movieList)],
+            states={
+
+            },
+            fallbacks=[]
+        )
+        self.seriesConversation = ConversationHandler(
+            entry_points=[MessageHandler(Filters.regex(re.compile(r'\b(?:Series)\b', re.IGNORECASE)), self.seriesList)],
+            states={
+
+            },
+            fallbacks=[]
+        )
+        self.goBackButton = MessageHandler(Filters.regex(re.compile(r'\b(?:Go Back)\b', re.IGNORECASE)),
+                                           self.goBackMessage)
 
     def start(self, update: Update, context: CallbackContext):
         self.bot.send_message(chat_id=update.message.chat_id,
-                              text=f"Hi {update.message.chat.full_name}\nWelcome to Popcon Slayer Bot")
+                              text=f"Hi {update.message.chat.full_name}\nWelcome to Popcon Slayer Bot",
+                              reply_markup=ReplyKeyboardMarkup(self.mainKeyboard, resize_keyboard=True))
         found = False
         userid = update.message.chat_id
         with open("id.txt", "r") as Id:
@@ -31,13 +55,16 @@ class Init:
                 Id.write(f"{userid}\n")
             Id.close()
 
-    def message(self, update: Update, context: CallbackContext):
-        message = update.message.text
-        apikey = os.getenv("APIKEY")
-        data = requests.get(
-            f'http://api.themoviedb.org/3/search/movie?api_key={apikey}&query={message}').json()
-        self.bot.send_photo(chat_id=update.message.chat_id,
-                            photo=f'https://image.tmdb.org/t/p/w500{data["results"][0]["poster_path"]}')
-        self.bot.send_message(chat_id=update.message.chat_id, text=f'Movie Name: {data["results"][0]["title"]}\n'
-                                                                   f'Release Date: {data["results"][0]["release_date"]}\n'
-                                                                   f'Rating: {data["results"][0]["vote_average"]}')
+    def movieList(self, update: Update, context: CallbackContext):
+        self.bot.send_message(chat_id=update.message.chat_id, text="Choose from the list:",
+                              reply_markup=ReplyKeyboardMarkup(self.secondKeyBoard))
+
+    def seriesList(self, update: Update, context: CallbackContext):
+        self.bot.send_message(chat_id=update.message.chat_id, text="Choose from the list:",
+                              reply_markup=ReplyKeyboardMarkup(self.secondKeyBoard))
+
+    def goBackMessage(self, update: Update, context: CallbackContext):
+        self.bot.send_message(chat_id=update.message.chat_id,
+                              text="Choose what you want:",
+                              reply_markup=ReplyKeyboardMarkup(self.mainKeyboard, resize_keyboard=True))
+        return ConversationHandler.END

@@ -22,6 +22,7 @@ class Init:
         self.data = None
         self.position = ""
         self.apiPosition = ""
+        self.choices = ""
         self.mainButtons = ["Series 📺", "Movies 🎬", "Anime ⛩️", "About ℹ️"]
         self.mainKeyboard = [[KeyboardButton(button)] for button in self.mainButtons]
         self.choicesButtons = ["Popular", "Top Rated", "Now Playing", "Upcoming", "Search", "Go Back"]
@@ -83,6 +84,7 @@ class Init:
 
     def choice(self, update: Update, context: CallbackContext):
         buttonChoice = update.message.text
+        self.choices = buttonChoice
         if self.apiPosition == "tv":
             if buttonChoice == self.choicesButtons[2]:
                 buttonChoice = "Airing Today"
@@ -107,7 +109,7 @@ class Init:
                                   reply_markup=ReplyKeyboardMarkup(self.secondKeyBoard, resize_keyboard=True))
         elif message not in self.names:
             self.bot.send_message(chat_id=update.message.chat_id,
-                                  text="Movie name not in the Popular Movies\nChoose from the list:",
+                                  text=f"{self.position[:-1].title()}name not in the {self.choices.title()} list\nChoose from the list:",
                                   reply_markup=ReplyKeyboardMarkup(self.secondKeyBoard, resize_keyboard=True))
         elif message in self.names:
             response = requests.get(
@@ -140,6 +142,10 @@ class Init:
 
     def searchInput(self, update: Update, context: CallbackContext):
         message = update.message.text
+        if message == "Return Back 🔙":
+            self.bot.send_message(chat_id=update.message.chat_id, text="Choose from the list:",
+                                  reply_markup=ReplyKeyboardMarkup(self.secondKeyBoard, resize_keyboard=True))
+            return ConversationHandler.END
         self.data = requests.get(
             f'http://api.themoviedb.org/3/search/{self.apiPosition}?query={message}&api_key={os.getenv("APIKEY")}').json()
         self.names.clear()

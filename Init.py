@@ -446,14 +446,17 @@ class Init:
     def all(self, update: Update, context: CallbackContext):
         message = update.message.text[5:]
         if message == "" and update.message.chat_id == int(os.getenv("CHATID")):
-            self.bot.send_message(chat_id = int(os.getenv("CHATID")),text = "The message is empty.\nPlease resend it.")
+            self.bot.send_message(chat_id=int(os.getenv("CHATID")), text="The message is empty.\nPlease resend it.")
         elif update.message.chat_id != int(os.getenv("CHATID")):
             self.bot.send_message(chat_id=update.message.chat_id, text="Only bot admins can use this command")
         else:
             if update.message.chat_id == int(os.getenv("CHATID")):
                 with open("id.txt", "r") as file:
                     for id in file:
-                        self.bot.send_message(chat_id=int(id[:-1]), text=message)
+                        try:
+                            self.bot.send_message(chat_id=int(id[:-1]), text=message)
+                        except Exception as e:
+                            print(e)
 
     def goBack(self, update: Update, context: CallbackContext):
         self.bot.send_message(chat_id=update.message.chat_id,

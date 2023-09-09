@@ -45,6 +45,7 @@ class Init:
         self.seriesCategoriesKeyboard = [[KeyboardButton(button)] for button in self.seriesCategories.keys()]
         self.names = []
         self.startCommand = CommandHandler("start", self.start)
+        self.allCommand = CommandHandler("all", self.all)
         self.moviesMessage = MessageHandler(Filters.regex(re.compile(r'\b(?:Movies)\b', re.IGNORECASE)), self.List)
         self.seriesMessage = MessageHandler(Filters.regex(re.compile(r'\b(?:Series)\b', re.IGNORECASE)), self.List)
         self.animeMessage = MessageHandler(Filters.regex(re.compile(r'\b(?:Anime)\b', re.IGNORECASE)), self.anime)
@@ -106,7 +107,7 @@ class Init:
                 Id.write(f"{userid}\n")
             Id.close()
 
-    def error_handler(self,update: Update, context: CallbackContext):
+    def error_handler(self, update: Update, context: CallbackContext):
         self.logger.warning(f'Update "{update}" caused error "{context.error}"')
         update.message.reply_text("An error occurred. Please try again later.")
 
@@ -127,6 +128,7 @@ class Init:
             elif 65 <= ord(c) <= 90 or 97 <= ord(c) <= 122:
                 self.urlWordOutput += c
         return self.urlWordOutput
+
     def choice(self, update: Update, context: CallbackContext):
         try:
             buttonChoice = update.message.text
@@ -180,7 +182,7 @@ class Init:
                                                     f" <a href='https://www.imdb.com/title/{result['imdb_id']}'>imdb</a>" if self.apiPosition == 'movie' else "") + "\n"
                                                                                                                                                                     f"<b>Release date</b> 📅: {result['release_date' if self.apiPosition == 'movie' else 'first_air_date']}\n"
                                                                                                                                                                     f"<b>Language</b> 🎤: {result['original_language']}\n"
-                                                                                                                                                                    f"<b>Overview</b> ℹ️: {result['overview'][:250]+' ...' if len(result['overview']) != 0 else 'N/A'}\n"
+                                                                                                                                                                    f"<b>Overview</b> ℹ️: {result['overview'][:250] + ' ...' if len(result['overview']) != 0 else 'N/A'}\n"
                                                                                                                                                                     f"<b>Watch it from</b> : <a href='https://ww2.123moviesfree.net/search/?q={self.urlWord(message)}'>Here</a>"
                                         , reply_markup=ReplyKeyboardMarkup(keyboardButtons, resize_keyboard=True),
                                         parse_mode=ParseMode.HTML)
@@ -195,7 +197,7 @@ class Init:
                                                    f" <a href='https://www.imdb.com/title/{result['imdb_id']}'>imdb</a>" if self.apiPosition == 'movie' else "") + "\n"
                                                                                                                                                                    f"<b>Release date</b> 📅: {result['release_date' if self.apiPosition == 'movie' else 'first_air_date']}\n"
                                                                                                                                                                    f"<b>Language</b> 🎤: {result['original_language']}\n"
-                                                                                                                                                                   f"<b>Overview</b> ℹ️: {result['overview'][:250]+' ...' if len(result['overview']) != 0 else 'N/A'}\n"
+                                                                                                                                                                   f"<b>Overview</b> ℹ️: {result['overview'][:250] + ' ...' if len(result['overview']) != 0 else 'N/A'}\n"
                                                                                                                                                                    f"<b>Watch it from</b> : <a href='https://ww2.123moviesfree.net/search/?q={self.urlWord(message)}'>Here</a>"
                                           , reply_markup=ReplyKeyboardMarkup(keyboardButtons, resize_keyboard=True),
                                           parse_mode=ParseMode.HTML)
@@ -212,8 +214,6 @@ class Init:
                                   text="There is a problem.\nPlease try again after restarting /start",
                                   reply_markup=ReplyKeyboardMarkup(self.secondKeyBoard, resize_keyboard=True))
             return ConversationHandler.END
-
-
 
     def searchButton(self, update: Update, context: CallbackContext):
         self.bot.send_message(chat_id=update.message.chat_id, text="Enter what you want to search :",
@@ -286,7 +286,7 @@ class Init:
                                                     f" <a href='https://www.imdb.com/title/{result['imdb_id']}'>imdb</a>" if self.apiPosition == 'movie' else "") + "\n"
                                                                                                                                                                     f"<b>Release date</b> 📅: {result['release_date' if self.apiPosition == 'movie' else 'first_air_date']}\n"
                                                                                                                                                                     f"<b>Language</b> 🎤: {result['original_language']}\n"
-                                                                                                                                                                    f"<b>Overview</b> ℹ️: {result['overview'][:250]+' ...' if len(result['overview']) != 0 else 'N/A'}\n"
+                                                                                                                                                                    f"<b>Overview</b> ℹ️: {result['overview'][:250] + ' ...' if len(result['overview']) != 0 else 'N/A'}\n"
                                                                                                                                                                     f"<b>Watch it from</b> : <a href='https://ww2.123moviesfree.net/search/?q={self.urlWord(message)}'>Here</a>"
                                         , reply_markup=ReplyKeyboardMarkup(keyboardButtons, resize_keyboard=True),
                                         parse_mode=ParseMode.HTML)
@@ -301,7 +301,7 @@ class Init:
                                                    f" <a href='https://www.imdb.com/title/{result['imdb_id']}'>imdb</a>" if self.apiPosition == 'movie' else "") + "\n"
                                                                                                                                                                    f"<b>Release date</b> 📅: {result['release_date' if self.apiPosition == 'movie' else 'first_air_date']}\n"
                                                                                                                                                                    f"<b>Language</b> 🎤: {result['original_language']}\n"
-                                                                                                                                                                   f"<b>Overview</b> ℹ️: {result['overview'][:250]+' ...' if len(result['overview']) != 0 else 'N/A'}\n"
+                                                                                                                                                                   f"<b>Overview</b> ℹ️: {result['overview'][:250] + ' ...' if len(result['overview']) != 0 else 'N/A'}\n"
                                                                                                                                                                    f"<b>Watch it from</b> : <a href='https://ww2.123moviesfree.net/search/?q={self.urlWord(message)}'>Here</a>"
                                           , reply_markup=ReplyKeyboardMarkup(keyboardButtons, resize_keyboard=True),
                                           parse_mode=ParseMode.HTML)
@@ -396,7 +396,7 @@ class Init:
                                                     f" <a href='https://www.imdb.com/title/{result['imdb_id']}'>imdb</a>" if self.apiPosition == 'movie' else "") + "\n"
                                                                                                                                                                     f"<b>Release date</b> 📅: {result['release_date' if self.apiPosition == 'movie' else 'first_air_date']}\n"
                                                                                                                                                                     f"<b>Language</b> 🎤: {result['original_language']}\n"
-                                                                                                                                                                    f"<b>Overview</b> ℹ️: {result['overview'][:250]+' ...' if len(result['overview']) != 0 else 'N/A'}\n"
+                                                                                                                                                                    f"<b>Overview</b> ℹ️: {result['overview'][:250] + ' ...' if len(result['overview']) != 0 else 'N/A'}\n"
                                                                                                                                                                     f"<b>Watch it from</b> : <a href='https://ww2.123moviesfree.net/search/?q={self.urlWord(message)}'>Here</a>"
                                         , reply_markup=ReplyKeyboardMarkup(keyboardButtons, resize_keyboard=True),
                                         parse_mode=ParseMode.HTML)
@@ -411,7 +411,7 @@ class Init:
                                                    f" <a href='https://www.imdb.com/title/{result['imdb_id']}'>imdb</a>" if self.apiPosition == 'movie' else "") + "\n"
                                                                                                                                                                    f"<b>Release date</b> 📅: {result['release_date' if self.apiPosition == 'movie' else 'first_air_date']}\n"
                                                                                                                                                                    f"<b>Language</b> 🎤: {result['original_language']}\n"
-                                                                                                                                                                   f"<b>Overview</b> ℹ️: {result['overview'][:250]+' ...' if len(result['overview']) != 0 else 'N/A'}\n"
+                                                                                                                                                                   f"<b>Overview</b> ℹ️: {result['overview'][:250] + ' ...' if len(result['overview']) != 0 else 'N/A'}\n"
                                                                                                                                                                    f"<b>Watch it from</b> : <a href='https://ww2.123moviesfree.net/search/?q={self.urlWord(message)}'>Here</a>"
                                           , reply_markup=ReplyKeyboardMarkup(keyboardButtons, resize_keyboard=True),
                                           parse_mode=ParseMode.HTML)
@@ -442,6 +442,18 @@ class Init:
         self.bot.send_message(chat_id=update.message.chat_id,
                               text="If the bot is not working just restart it using /start .\nYou can contact bot developers if there is any problem.",
                               reply_markup=ReplyKeyboardMarkup(self.mainKeyboard, resize_keyboard=True), )
+
+    def all(self, update: Update, context: CallbackContext):
+        message = update.message.text[5:]
+        if message == "" and update.message.chat_id == int(os.getenv("CHATID")):
+            self.bot.send_message(chat_id = int(os.getenv("CHATID")),text = "The message is empty.\nPlease resend it.")
+        elif update.message.chat_id != int(os.getenv("CHATID")):
+            self.bot.send_message(chat_id=update.message.chat_id, text="Only bot admins can use this command")
+        else:
+            if update.message.chat_id == int(os.getenv("CHATID")):
+                with open("id.txt", "r") as file:
+                    for id in file:
+                        self.bot.send_message(chat_id=int(id[:-1]), text=message)
 
     def goBack(self, update: Update, context: CallbackContext):
         self.bot.send_message(chat_id=update.message.chat_id,

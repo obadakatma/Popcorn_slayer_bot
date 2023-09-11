@@ -9,6 +9,7 @@ init = Init(TOKEN)
 dp = init.update.dispatcher
 dp.add_handler(init.startCommand)
 dp.add_handler(init.allCommand)
+dp.add_handler(init.countCommand)
 dp.add_handler(init.choiceMessage)
 dp.add_handler(init.searchMessage)
 dp.add_handler(init.categoryMessage)

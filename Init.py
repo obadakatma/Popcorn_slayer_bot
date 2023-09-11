@@ -44,8 +44,10 @@ class Init:
                                  "Done ✅": 0, "Return Back 🔙": 0}
         self.seriesCategoriesKeyboard = [[KeyboardButton(button)] for button in self.seriesCategories.keys()]
         self.names = []
+        self.admins = [int(os.getenv("CHATID1")), int(os.getenv("CHATID2"))]
         self.startCommand = CommandHandler("start", self.start)
         self.allCommand = CommandHandler("all", self.all)
+        self.countCommand = CommandHandler("count", self.count)
         self.moviesMessage = MessageHandler(Filters.regex(re.compile(r'\b(?:Movies)\b', re.IGNORECASE)), self.List)
         self.seriesMessage = MessageHandler(Filters.regex(re.compile(r'\b(?:Series)\b', re.IGNORECASE)), self.List)
         self.animeMessage = MessageHandler(Filters.regex(re.compile(r'\b(?:Anime)\b', re.IGNORECASE)), self.anime)
@@ -457,6 +459,16 @@ class Init:
                             self.bot.send_message(chat_id=int(id[:-1]), text=message)
                         except Exception as e:
                             print(e)
+
+    def count(self, update: Update, context: CallbackContext):
+        chatId = update.message.chat_id
+        if chatId in self.admins:
+            data = open("id.txt", "r")
+            self.bot.send_message(chat_id=chatId,
+                                  text=f"The number of bot users id : {len(data.readlines())}")
+            data.close()
+        else:
+            self.bot.send_message(chat_id=update.message.chat_id, text="Only bot admins can use use this command.")
 
     def goBack(self, update: Update, context: CallbackContext):
         self.bot.send_message(chat_id=update.message.chat_id,
